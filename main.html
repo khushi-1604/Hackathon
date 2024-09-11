@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Safety App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f8ff;
+        color: #333;
+      }
+
+      .container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        text-align: center;
+        color: darkblue;
+      }
+
+      h2 {
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 15px;
+        background-color: lightblue;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      button.help-btn {
+        background-color: red;
+        color: white;
+      }
+
+      .profile-btn {
+        margin-top: 20px;
+      }
+
+      ul {
+        list-style-type: none;
+        margin-top: 20px;
+        padding: 0;
+      }
+
+      ul li {
+        padding: 10px;
+        background-color: #f9f9f9;
+        margin-bottom: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: left;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Safety App</h1>
+      </header>
+
+      <!-- Login Screen -->
+      <section id="login-section">
+        <h2>Enter Your Details</h2>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age" required />
+
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" required />
+
+        <label for="gmail">Gmail:</label>
+        <input type="email" id="gmail" name="gmail" required />
+
+        <button onclick="saveUserDetails()">Submit</button>
+      </section>
+
+      <!-- Main Section -->
+      <section id="main-section" style="display: none">
+        <button class="profile-btn" onclick="showProfile()">Profile</button>
+
+        <div class="emergency-contact">
+          <h3>Add Emergency Contact</h3>
+          <label for="contact-name">Contact Name:</label>
+          <input type="text" id="contact-name" name="contact-name" required />
+
+          <label for="contact-number">Contact Number:</label>
+          <input
+            type="text"
+            id="contact-number"
+            name="contact-number"
+            required
+          />
+
+          <button onclick="addEmergencyContact()">Add Contact</button>
+
+          <ul id="contact-list"></ul>
+
+          <button onclick="sendHelpMessage()" class="help-btn">HELP</button>
+          <button onclick="clearContacts()">Clear All Contacts</button>
+        </div>
+      </section>
+
+      <!-- Profile Section -->
+      <section id="profile-section" style="display: none">
+        <h2>Profile</h2>
+        <div id="profile-details"></div>
+        <button onclick="deleteAccount()">Delete Account</button>
+        <button onclick="backToMain()">Back</button>
+      </section>
+
+      <footer>
+        <p>Stay Safe!</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+
+  <script>
+    function saveUserDetails() {
+      const name = document.getElementById("name").value;
+      const age = document.getElementById("age").value;
+      const mobile = document.getElementById("mobile").value;
+      const gmail = document.getElementById("gmail").value;
+
+      if (name && age && mobile && gmail) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ name, age, mobile, gmail })
+        );
+        alert("User details saved successfully!");
+        showMainSection();
+      } else {
+        alert("Please fill out all fields.");
+      }
+    }
+
+    function showMainSection() {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("main-section").style.display = "block";
+    }
+
+    function showProfile() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        const profileDetails = `
+            <p><strong>Name:</strong> ${user.name}</p>
+            <p><strong>Age:</strong> ${user.age}</p>
+            <p><strong>Mobile:</strong> ${user.mobile}</p>
+            <p><strong>Gmail:</strong> ${user.gmail}</p>
+        `;
+        document.getElementById("profile-details").innerHTML = profileDetails;
+        document.getElementById("main-section").style.display = "none";
+        document.getElementById("profile-section").style.display = "block";
+      }
+    }
+
+    function backToMain() {
+      document.getElementById("profile-section").style.display = "none";
+      document.getElementById("main-section").style.display = "block";
+    }
+
+    function addEmergencyContact() {
+      const contactName = document.getElementById("contact-name").value;
+      const contactNumber = document.getElementById("contact-number").value;
+
+      if (contactName && contactNumber) {
+        const contactList = document.getElementById("contact-list");
+        const listItem = document.createElement("li");
+        listItem.textContent = `${contactName}: ${contactNumber}`;
+        contactList.appendChild(listItem);
+      } else {
+        alert("Please enter both name and contact number.");
+      }
+    }
+
+    function clearContacts() {
+      document.getElementById("contact-list").innerHTML = "";
+    }
+
+    function sendHelpMessage() {
+      const message = "I am in danger! Please help!";
+      const contacts = document
+        .getElementById("contact-list")
+        .getElementsByTagName("li");
+
+      if (contacts.length > 0) {
+        for (let contact of contacts) {
+          console.log(`Sending message to: ${contact.textContent}`);
+          // Here you would integrate WhatsApp or other messaging APIs to send the message
+        }
+      } else {
+        alert("No contacts available.");
+      }
+    }
+
+    function deleteAccount() {
+      if (confirm("Are you sure you want to delete your account?")) {
+        localStorage.removeItem("user");
+        alert("Account deleted successfully.");
+        location.reload();
+      }
+      function sendHelpMessage() {
+        // Get the emergency contacts from the list
+        const contacts = document
+          .getElementById("contact-list")
+          .getElementsByTagName("li");
+        if (contacts.length > 0) {
+          // First, get the user's location
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              function (position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                const locationURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+                // Loop through the contacts and send WhatsApp messages
+                for (let contact of contacts) {
+                  const contactInfo = contact.textContent.split(":");
+                  const contactNumber = contactInfo[1].trim();
+                  const message = `I am in danger! Please help! Here is my live location: ${locationURL}`;
+
+                  // Open WhatsApp with the message
+                  const whatsappURL = `https://wa.me/${contactNumber}?text=${encodeURIComponent(
+                    message
+                  )}`;
+                  window.open(whatsappURL);
+                }
+
+                // Start video recording and take a snapshot after a few seconds
+                startVideoRecording();
+              },
+              function (error) {
+                alert(
+                  "Unable to retrieve your location. Please enable location services."
+                );
+              }
+            );
+          } else {
+            alert("Geolocation is not supported by this browser.");
+          }
+        } else {
+          alert("No contacts available.");
+        }
+      }
+
+      function startVideoRecording() {
+        const video = document.createElement("video");
+
+        // Access the camera
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+            video.play();
+
+            // Append the video element to the body (optional, for preview purposes)
+            document.body.appendChild(video);
+
+            // After 5 seconds, take a snapshot and stop the video
+            setTimeout(function () {
+              takeSnapshot(video, stream);
+            }, 5000);
+          })
+          .catch(function (err) {
+            alert("Error accessing the camera: " + err);
+          });
+      }
+
+      function takeSnapshot(video, stream) {
+        // Create a canvas to capture a frame
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert the canvas to an image
+        const imageData = canvas.toDataURL("image/png");
+
+        // Stop the video stream
+        stream.getTracks().forEach((track) => track.stop());
+
+        // Remove the video element from the DOM
+        video.remove();
+
+        // Send the snapshot image to WhatsApp contacts
+        sendSnapshotToContacts(imageData);
+      }
+
+      function sendSnapshotToContacts(imageData) {
+        const contacts = document
+          .getElementById("contact-list")
+          .getElementsByTagName("li");
+        if (contacts.length > 0) {
+          for (let contact of contacts) {
+            const contactInfo = contact.textContent.split(":");
+            const contactNumber = contactInfo[1].trim();
+
+            // Open WhatsApp with the image URL (WhatsApp doesn't natively support sending images via URL)
+            const message = `Here is my current snapshot for your reference.`;
+            const whatsappURL = `https://wa.me/${contactNumber}?text=${encodeURIComponent(
+              message
+            )}`;
+
+            // WhatsApp web doesn’t directly allow sending images from URLs, but you can notify the user to send the image manually.
+            window.open(whatsappURL);
+          }
+        }
+      }
+    }
+  </script>
+</html>
